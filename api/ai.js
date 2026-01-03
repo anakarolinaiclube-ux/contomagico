@@ -47,7 +47,7 @@ export default async function handler(req, res) {
 
       REGRAS DE FORMATAÇÃO:
       - O texto deve ser formatado em HTML (sem as tags <html>, <head> ou <body>).
-      - Use <h2> para o Título da História (Crie um título criativo).
+      - Use <h2> para o Título da História (Crie um título criativo e relacionado ao cenário).
       - Use <p> para os parágrafos.
       - A linguagem deve ser adequada para uma criança de ${idade} anos.
       - A história deve ter no máximo 400 palavras.
