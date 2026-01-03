@@ -3,452 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conto Mágico - Histórias Imersivas</title>
-    <!-- Fontes lúdicas e legíveis -->
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Biblioteca para PDF -->
+    <title>Mundo das Histórias</title>
+    <!-- Fontes Premium para Leitura e Títulos -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
         :root {
-            --primary-color: #A855F7; /* Roxo vibrante */
-            --secondary-color: #6D28D9; /* Roxo mais escuro */
-            --text-color: #333;
-            --card-bg: rgba(255, 255, 255, 0.95); /* Fundo do card semi-transparente */
-            --font-main: 'Comfortaa', cursive;
-            --font-body: 'Quicksand', sans-serif;
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --text-color: #2c3e50;
+            --primary-accent: #6C5CE7;
+            --shadow-elevation: 0 20px 60px rgba(0,0,0,0.3);
         }
 
         body {
-            font-family: var(--font-body);
-            color: var(--text-color);
+            font-family: 'Nunito', sans-serif;
             margin: 0;
-            padding: 20px;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center; /* Centraliza verticalmente o container */
-            min-height: 100vh;
-            overflow: hidden; /* Evita scrollbars devido a efeitos de background */
-            background-size: cover;
-            background-position: center;
-            transition: background-image 1.5s ease-in-out, background-color 1.5s ease-in-out;
+            align-items: center; /* Centraliza verticalmente */
+            overflow-x: hidden;
+            background-color: #f0f0f0;
+            transition: background 1.5s ease;
             position: relative;
         }
 
-        /* Efeito de Overlay para legibilidade em todos os backgrounds */
-        body::before {
+        /* --- SISTEMA DE ATMOSFERA (THEMES) --- */
+        
+        /* Elementos globais de atmosfera */
+        body::before, body::after {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.15); /* Escurece um pouco o background para o texto no card se destacar */
-            backdrop-filter: blur(2px); /* Adiciona um blur suave ao background */
-            z-index: -1; /* Fica abaixo do conteúdo principal */
-            transition: background 1.5s ease-in-out, backdrop-filter 1.5s ease-in-out;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            transition: opacity 1.5s ease;
+            z-index: 0;
         }
 
-        /* --- THEMES (Backgrounds Imersivos) --- */
-
-        /* Padrão (Céu suave) */
+        /* 1. PADRÃO: Sonho nas Nuvens */
         body.theme-padrao {
-            background: linear-gradient(to top, #c7ecee, #7ed6df);
-            /* Nuvens sutis via SVG */
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%23ffffff' fill-opacity='0.2'%3E%3Cpath fill-rule='evenodd' d='M0 0h40v40H0V0zm40 40h40v40H40V40z'/%3E%3C/g%3E%3C/svg%3E");
-            background-size: 40px;
+            background: linear-gradient(180deg, #89f7fe 0%, #66a6ff 100%);
+        }
+        body.theme-padrao::before {
+            background: radial-gradient(circle at 80% 20%, rgba(255,255,255,0.4) 0%, transparent 20%),
+                        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.3) 0%, transparent 30%);
+            filter: blur(40px);
+        }
+        body.theme-padrao::after {
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 50 Q35 30 50 50 T80 50' fill='none' stroke='white' stroke-width='2' stroke-opacity='0.5'/%3E%3C/svg%3E");
+            opacity: 0.3;
+            animation: floatClouds 60s infinite linear;
         }
 
-        /* Floresta Encantada */
+        /* 2. FLORESTA: Luz entre as folhas */
         body.theme-floresta {
-            background: linear-gradient(to bottom, #4CAF50, #8BC34A, #CDDC39);
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%235D4037' fill-opacity='0.1'%3E%3Cpath d='M30 0L0 30l30 30 30-30z'/%3E%3Ccircle cx='30' cy='30' r='15'/%3E%3C/g%3E%3C/svg%3E"); /* Padrão de folhas/raízes */
-            background-size: 120px;
+            background: linear-gradient(to bottom, #134E5E, #71B280); /* Verde profundo */
         }
-        body.theme-floresta::before { background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(3px) brightness(0.9); }
-
-        /* Espaço Sideral */
-        body.theme-espaco {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            color: #E0E0E0; /* Texto do body mais claro */
-            background-image: radial-gradient(white 1px, transparent 1px), radial-gradient(white 1px, transparent 1px);
+        body.theme-floresta::before {
+            /* Raios de sol filtrados */
+            background: radial-gradient(circle at 50% 0%, rgba(255, 255, 200, 0.3) 0%, transparent 60%);
+            animation: sunPulse 10s infinite alternate;
+        }
+        body.theme-floresta::after {
+            /* Partículas flutuantes (vagalumes/pólen) */
+            background-image: radial-gradient(white 1px, transparent 1px);
             background-size: 50px 50px;
-            background-position: 0 0, 25px 25px;
-            animation: twinkle 60s infinite alternate; /* Animação de estrelas */
-        }
-        body.theme-espaco::before { background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(1px) brightness(0.8); }
-        @keyframes twinkle {
-            0% { background-position: 0 0, 25px 25px; }
-            100% { background-position: 100px 100px, 125px 125px; }
+            opacity: 0.4;
+            animation: particleRise 20s infinite linear;
         }
 
-        /* Fundo do Mar */
+        /* 3. ESPAÇO: Profundidade Cósmica */
+        body.theme-espaco {
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+        }
+        body.theme-espaco::before {
+            /* Nebulosa */
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(76, 29, 149, 0.4), transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 0, 128, 0.2), transparent 50%);
+            filter: blur(30px);
+        }
+        body.theme-espaco::after {
+            /* Estrelas */
+            background-image: radial-gradient(white 1px, transparent 1px), radial-gradient(white 1.5px, transparent 1.5px);
+            background-size: 60px 60px, 130px 130px;
+            background-position: 0 0, 30px 30px;
+            animation: starsTwinkle 120s infinite linear;
+        }
+
+        /* 4. MAR: Submersão Calma */
         body.theme-mar {
-            background: linear-gradient(to top, #00BFFF, #1E90FF, #00008B);
-            background-image: radial-gradient(circle, rgba(255,255,255,0.1) 10%, transparent 10%), 
-                              radial-gradient(circle, rgba(255,255,255,0.05) 5%, transparent 5%);
-            background-size: 60px 60px, 30px 30px;
-            background-position: 0 0, 15px 15px;
-            animation: bubbles 10s infinite linear;
+            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
         }
-        body.theme-mar::before { background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(4px) brightness(0.95); }
-        @keyframes bubbles {
-            from { background-position: 0 0, 15px 15px; }
-            to { background-position: 0 600px, 15px 615px; }
+        body.theme-mar::before {
+            /* Efeito de luz na água (Caustics simulado) */
+            background: repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0px, transparent 20px, rgba(255,255,255,0.05) 40px);
+            animation: waterRefract 15s infinite ease-in-out alternate;
+        }
+        body.theme-mar::after {
+            /* Profundidade azul escura */
+            background: linear-gradient(to top, rgba(0,20,60,0.6) 0%, transparent 100%);
         }
 
-        /* Reino Mágico */
+        /* 5. REINO: Pôr do sol mágico */
         body.theme-reino {
-            background: linear-gradient(to top right, #EE9CA7, #FFDDE1);
-            background-image: radial-gradient(circle, #fbcfe8 1px, transparent 1px),
-                              radial-gradient(circle, #f9a8d4 1px, transparent 1px);
-            background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
-            animation: magicGlow 20s infinite alternate;
+            background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 50%, #E0C3FC 100%);
         }
-        body.theme-reino::before { background: rgba(0, 0, 0, 0.1); backdrop-filter: blur(2px) saturate(1.2); }
-        @keyframes magicGlow {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
+        body.theme-reino::before {
+            /* Brilho dourado central */
+            background: radial-gradient(circle at center, rgba(255,215,0,0.2) 0%, transparent 70%);
+            animation: royalGlow 5s infinite alternate;
         }
-
-        /* Cidade Aventureira */
-        body.theme-cidade {
-            background: linear-gradient(to bottom, #b0c4de, #778899, #465561);
-            background-image: url("data:image/svg+xml,%3Csvg width='50' height='50' viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='25' height='25' fill='%23000' fill-opacity='0.1'/%3E%3Crect x='25' y='25' width='25' height='25' fill='%23000' fill-opacity='0.1'/%3E%3C/svg%3E");
-            background-size: 100px;
-        }
-        body.theme-cidade::before { background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(3px); }
-
-        /* Templo Misterioso */
-        body.theme-misterio {
-            background: linear-gradient(to bottom, #2c3e50, #34495e, #7f8c8d);
-            background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
-            animation: fog 30s infinite alternate;
-        }
-        body.theme-misterio::before { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px) grayscale(0.5); }
-        @keyframes fog {
-            0% { background-position: 0 0; }
-            100% { background-position: 100px 100px; }
+        body.theme-reino::after {
+            /* Textura sutil de brilho */
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0 L22 18 L40 20 L22 22 L20 40 L18 22 L0 20 L18 18 Z' fill='white' fill-opacity='0.2'/%3E%3C/svg%3E");
+            background-size: 80px 80px;
+            opacity: 0.5;
+            animation: particleRise 40s infinite linear;
         }
 
+        /* --- ANIMAÇÕES SUTIS --- */
+        @keyframes sunPulse { 0% { opacity: 0.5; } 100% { opacity: 0.8; } }
+        @keyframes particleRise { 0% { background-position: 0% 100%; } 100% { background-position: 0% 0%; } }
+        @keyframes starsTwinkle { 0% { transform: rotate(0deg); } 100% { transform: rotate(5deg); } }
+        @keyframes waterRefract { 0% { opacity: 0.3; transform: scale(1); } 100% { opacity: 0.6; transform: scale(1.05); } }
+        @keyframes royalGlow { 0% { transform: scale(0.9); } 100% { transform: scale(1.1); } }
+        @keyframes floatClouds { from { background-position: 0 0; } to { background-position: 100% 0; } }
 
-        /* --- Container Principal --- */
+        /* --- CONTAINER PRINCIPAL (O LIVRO) --- */
         .container {
-            background-color: var(--card-bg);
-            color: var(--text-color);
-            width: 100%;
-            max-width: 650px;
-            padding: 35px;
-            border-radius: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             position: relative;
-            z-index: 1; /* Garante que o container esteja acima do overlay do body */
-            border: 3px solid rgba(255, 255, 255, 0.7);
-            transform: scale(1);
-            transition: transform 0.3s ease-out;
-        }
-        .container:hover {
-            transform: scale(1.005);
+            z-index: 10;
+            background-color: var(--card-bg);
+            width: 90%;
+            max-width: 650px;
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-elevation);
+            margin: 40px 0;
+            border: 1px solid rgba(255,255,255,0.6);
+            backdrop-filter: blur(5px); /* Efeito vidro sutil */
         }
 
+        /* --- TIPOGRAFIA E ELEMENTOS --- */
         h1 {
-            font-family: var(--font-main);
-            color: var(--primary-color);
+            font-family: 'Pacifico', cursive;
+            color: var(--primary-accent);
             text-align: center;
             font-size: 2.8rem;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.05);
         }
 
-        .intro {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #555;
-            font-size: 1.1rem;
-            line-height: 1.5;
-        }
+        .intro { text-align: center; color: #636e72; margin-bottom: 40px; font-size: 1.1rem; }
 
+        .form-group { margin-bottom: 25px; }
+        
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 700;
-            color: var(--secondary-color);
-            font-size: 1.05rem;
+            color: #4a69bd;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
         }
 
-        input, select, textarea {
+        input, select {
             width: 100%;
-            padding: 14px;
-            margin-bottom: 20px;
-            border: 2px solid #ddd;
+            padding: 16px;
+            border: 2px solid #dfe6e9;
             border-radius: 12px;
-            font-family: var(--font-body);
             font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
+            background: #fdfdfd;
+            transition: all 0.3s ease;
             box-sizing: border-box;
-            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.3);
+        input:focus, select:focus {
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
             outline: none;
         }
 
         button {
             width: 100%;
-            padding: 16px;
-            background-color: var(--primary-color);
+            padding: 18px;
+            background: linear-gradient(45deg, #6C5CE7, #a29bfe);
             color: white;
             border: none;
             border-radius: 12px;
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
-            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.4);
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         button:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(109, 40, 217, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
         }
 
-        .hidden {
-            display: none;
+        /* --- ESTILO DA HISTÓRIA GERADA --- */
+        #story-content {
+            line-height: 1.9;
+            font-size: 1.2rem;
+            color: #2d3436;
         }
-
-        /* Loading Spinner */
-        .loading {
+        
+        #story-content h2 {
+            font-family: 'Pacifico', cursive;
+            color: var(--primary-accent);
             text-align: center;
-            padding: 40px;
-        }
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid rgba(255, 255, 255, 0.3);
-            border-top: 6px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 25px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading p {
-            font-size: 1.1rem;
-            color: #666;
-        }
-
-        /* Story Result Styles */
-        #story-container {
-            font-family: var(--font-body);
-            font-size: 1.15rem;
-            line-height: 1.7;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.8); /* Fundo um pouco mais opaco para o texto */
-            border-radius: 15px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            font-size: 2.2rem;
+            margin-top: 0;
             margin-bottom: 30px;
         }
 
-        #story-container h2 {
-            font-family: var(--font-main);
-            color: var(--secondary-color);
-            text-align: center;
-            font-size: 2rem;
-            margin-top: 0;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .actions {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
-        }
+        #story-content p { margin-bottom: 20px; }
         
-        .btn-action {
-            padding: 12px 25px;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-
-        .btn-pdf {
-            background-color: #2ECC71; /* Verde */
-            color: white;
-        }
-        .btn-pdf:hover {
-            background-color: #27AE60;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
-        }
-
-        .btn-new-story {
-            background-color: #95A5A6; /* Cinza */
-            color: white;
-        }
-        .btn-new-story:hover {
-            background-color: #7F8C8D;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(149, 165, 166, 0.4);
-        }
-
-        .final-message {
-            text-align: center;
-            margin-top: 25px;
-            font-size: 1rem;
-            color: #777;
+        /* Destaque para a mensagem final */
+        #story-content p:last-child {
+            background-color: rgba(108, 92, 231, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid var(--primary-accent);
             font-style: italic;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .actions { display: flex; gap: 15px; margin-top: 40px; }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-accent);
+            color: var(--primary-accent);
+            box-shadow: none;
+        }
+        .btn-outline:hover { background: var(--primary-accent); color: white; }
+
+        .hidden { display: none; }
+        
+        /* Spinner Personalizado */
+        .spinner {
+            width: 60px; height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--primary-accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 600px) {
+            .container { padding: 30px; width: 90%; }
+            h1 { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body class="theme-padrao">
 
-<div class="container">
-    <!-- TELA 1: Formulário -->
-    <div id="form-screen">
-        <h1>Fábrica de Contos 💫</h1>
-        <p class="intro">
-            Crie uma aventura mágica e personalizada para a criança mais especial da sua vida! Escolha o cenário e deixe a imaginação nos guiar.
-        </p>
+    <div class="container">
         
-        <form id="story-form">
-            <label for="nome">Nome da Criança</label>
-            <input type="text" id="nome" placeholder="Ex: Maria" required>
+        <!-- TELA 1: FORMULÁRIO -->
+        <div id="form-screen">
+            <h1>Criar História Mágica ✨</h1>
+            <p class="intro">Personalize uma aventura inesquecível para ler agora mesmo.</p>
 
-            <div style="display: flex; gap: 15px;">
-                <div style="flex: 1;">
-                    <label for="idade">Idade</label>
-                    <input type="number" id="idade" placeholder="Ex: 7" required>
+            <form id="story-form">
+                <div class="form-group">
+                    <label>Nome da Criança</label>
+                    <input type="text" id="nome" placeholder="Ex: Bia" required>
                 </div>
-                <div style="flex: 1;">
-                    <label for="genero">Tipo de História</label>
-                    <select id="genero">
-                        <option value="Aventura">Aventura Épica</option>
-                        <option value="Fantasia">Fantasia Mágica</option>
-                        <option value="Mistério">Mistério Divertido</option>
-                        <option value="Amizade">Amizade e União</option>
-                        <option value="Coragem">Coragem e Descoberta</option>
+
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label>Idade</label>
+                        <input type="number" id="idade" placeholder="Anos" required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Gênero</label>
+                        <select id="genero">
+                            <option value="Aventura">Aventura</option>
+                            <option value="Fantasia">Fantasia</option>
+                            <option value="Ficção">Espaço</option>
+                            <option value="Super-Herói">Herói</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Cenário (Define o Visual)</label>
+                    <select id="cenario" onchange="changeTheme(this.value)">
+                        <option value="padrao">Sonho nas Nuvens ☁️</option>
+                        <option value="floresta">Floresta Encantada 🌿</option>
+                        <option value="espaco">Viagem ao Espaço 🚀</option>
+                        <option value="mar">Fundo do Mar 🐠</option>
+                        <option value="reino">Reino Mágico 🏰</option>
                     </select>
                 </div>
+
+                <div class="form-group">
+                    <label>Mensagem / Lição (Ex: Coragem)</label>
+                    <input type="text" id="mensagem" placeholder="Ex: Compartilhar brinquedos">
+                </div>
+
+                <button type="submit">Gerar História</button>
+            </form>
+        </div>
+
+        <!-- TELA 2: LOADING -->
+        <div id="loading-screen" class="hidden" style="text-align: center; padding: 40px 0;">
+            <div class="spinner"></div>
+            <h3 style="color: var(--primary-accent); margin-top: 20px;">Escrevendo...</h3>
+            <p style="color: #666;">A magia está acontecendo, aguarde um pouquinho!</p>
+        </div>
+
+        <!-- TELA 3: HISTÓRIA -->
+        <div id="result-screen" class="hidden">
+            <div id="story-content"></div>
+
+            <div class="actions">
+                <button onclick="downloadPDF()" style="flex: 1;">Baixar PDF 📥</button>
+                <button onclick="location.reload()" class="btn-outline" style="flex: 1;">Nova História 🔄</button>
             </div>
-
-            <label for="caracteristicas">Características (Opcional)</label>
-            <input type="text" id="caracteristicas" placeholder="Ex: Cabelos loiros e olhos curiosos">
-
-            <label for="cenario">Escolha o Cenário Mágico!</label>
-            <select id="cenario" onchange="changeTheme(this.value)">
-                <option value="padrao">Céu de Nuvens ☁️</option>
-                <option value="floresta">Floresta Encantada 🌳</option>
-                <option value="espaco">Espaço Sideral ✨</option>
-                <option value="mar">Fundo do Mar 🌊</option>
-                <option value="reino">Reino de Contos 🏰</option>
-                <option value="cidade">Cidade Aventureira 🏙️</option>
-                <option value="misterio">Templo Misterioso 🗿</option>
-            </select>
-
-            <label for="mensagem">Uma Mensagem Secreta dos Pais</label>
-            <input type="text" id="mensagem" placeholder="Ex: Que ela seja sempre gentil e corajosa">
-
-            <button type="submit">Criar minha história mágica 🚀</button>
-        </form>
-    </div>
-
-    <!-- TELA 2: Loading -->
-    <div id="loading-screen" class="hidden loading">
-        <div class="spinner"></div>
-        <p>A magia está acontecendo! Criando a história...</p>
-    </div>
-
-    <!-- TELA 3: Resultado -->
-    <div id="result-screen" class="hidden">
-        <h1>Sua História Mágica! 📖</h1>
-        
-        <div id="story-container">
-            <!-- O conteúdo gerado pela IA entrará aqui -->
         </div>
 
-        <div class="actions">
-            <button onclick="downloadPDF()" class="btn-action btn-pdf">Baixar em PDF 📥</button>
-            <button onclick="location.reload()" class="btn-action btn-new-story">Criar Nova História 🔄</button>
-        </div>
-        
-        <p class="final-message">✨ As melhores histórias são as que criamos juntos. Feliz leitura! ✨</p>
     </div>
-</div>
 
-<script>
-    // Função para mudar a classe do body e, consequentemente, o tema do background
-    function changeTheme(theme) {
-        document.body.className = `theme-${theme}`;
-    }
+    <script>
+        function changeTheme(theme) {
+            document.body.className = `theme-${theme}`;
+        }
 
-    const form = document.getElementById('story-form');
-    const formScreen = document.getElementById('form-screen');
-    const loadingScreen = document.getElementById('loading-screen');
-    const resultScreen = document.getElementById('result-screen');
-    const storyContainer = document.getElementById('story-container');
+        const form = document.getElementById('story-form');
+        const formScreen = document.getElementById('form-screen');
+        const loadingScreen = document.getElementById('loading-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const storyContent = document.getElementById('story-content');
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        // Coleta de dados
-        const data = {
-            nome: document.getElementById('nome').value,
-            idade: document.getElementById('idade').value,
-            genero: document.getElementById('genero').value,
-            caracteristicas: document.getElementById('caracteristicas').value,
-            cenario: document.getElementById('cenario').options[document.getElementById('cenario').selectedIndex].text, // Envia o texto bonito
-            mensagem: document.getElementById('mensagem').value
-        };
+            const cenarioSelect = document.getElementById('cenario');
+            const data = {
+                nome: document.getElementById('nome').value,
+                idade: document.getElementById('idade').value,
+                genero: document.getElementById('genero').value,
+                // Passa o texto legível para a IA
+                cenario: cenarioSelect.options[cenarioSelect.selectedIndex].text,
+                mensagem: document.getElementById('mensagem').value
+            };
 
-        // Troca de tela
-        formScreen.classList.add('hidden');
-        loadingScreen.classList.remove('hidden');
+            formScreen.classList.add('hidden');
+            loadingScreen.classList.remove('hidden');
 
-        try {
-            const response = await fetch('/api/ai', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+            try {
+                const response = await fetch('/api/ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
 
-            const json = await response.json();
+                const json = await response.json();
 
-            if (response.ok) {
-                // Injeta o HTML retornado
-                storyContainer.innerHTML = json.result;
-                
-                loadingScreen.classList.add('hidden');
-                resultScreen.classList.remove('hidden');
-            } else {
-                alert('Erro ao gerar a história: ' + json.error);
+                if (response.ok) {
+                    storyContent.innerHTML = json.result;
+                    loadingScreen.classList.add('hidden');
+                    resultScreen.classList.remove('hidden');
+                } else {
+                    alert('Erro: ' + json.error);
+                    location.reload();
+                }
+            } catch (error) {
+                alert('Erro de conexão. Tente novamente.');
                 location.reload();
             }
+        });
 
-        } catch (error) {
-            console.error(error);
-            alert('Ocorreu um erro ao conectar com o servidor.');
-            location.reload();
+        function downloadPDF() {
+            const element = document.getElementById('story-content');
+            const opt = {
+                margin: 1,
+                filename: 'historia-magica.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
         }
-    });
-
-    function downloadPDF() {
-        const element = document.getElementById('story-container'); // Seleciona apenas o container da história para o PDF
-        const opt = {
-            margin:       1,
-            filename:     `historia-${document.getElementById('nome').value}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-        
-        html2pdf().set(opt).from(element).save();
-    }
-</script>
-
+    </script>
 </body>
 </html>
