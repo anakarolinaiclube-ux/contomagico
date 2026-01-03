@@ -1,7 +1,7 @@
 {
-  "name": "microsaas-historias-infantis",
-  "version": "1.0.0",
-  "description": "Gerador de histórias infantis via IA",
+  "name": "microsaas-historias-magicas",
+  "version": "2.0.0",
+  "description": "Gerador de histórias infantis com ilustrações IA",
   "main": "api/ai.js",
   "scripts": {
     "start": "node api/ai.js"
@@ -12,5 +12,4 @@
   "engines": {
     "node": "24.x"
   }
-
 }
