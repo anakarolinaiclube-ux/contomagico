@@ -3,282 +3,475 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fábrica de Sonhos - Histórias Ilustradas</title>
-    <!-- Fontes Lúdicas -->
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
-    <!-- Biblioteca PDF -->
+    <title>Conto Mágico - Histórias Imersivas</title>
+    <!-- Fontes Lúdicas e Premium -->
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Biblioteca para PDF (apenas texto) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
         :root {
-            --bg-color: #f0f0f0;
+            --primary-color: #7B68EE; /* MediumSlateBlue */
+            --secondary-color: #6A5ACD; /* SlateBlue */
+            --text-color: #34495e; /* Dark Blue Grey */
+            --light-text-color: #ecf0f1; /* Light Grey */
             --card-bg: rgba(255, 255, 255, 0.95);
-            --primary: #FF6B6B;
-            --text: #2d3436;
-        }
-
-        /* --- THEMES (Cenários) --- */
-        body.theme-padrao { background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); }
-        
-        body.theme-floresta { 
-            background: linear-gradient(to bottom, #A8E6CF, #DCEDC1); 
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30h2v20h-2z' fill='%23558b2f' fill-opacity='0.1'/%3E%3Ccircle cx='31' cy='25' r='8' fill='%23558b2f' fill-opacity='0.1'/%3E%3C/svg%3E");
-        }
-
-        body.theme-espaco { 
-            background: radial-gradient(circle at center, #2b1055, #7597de);
-            color: #fff; /* Texto fora do card fica branco */
-            /* Estrelinhas simples via CSS */
-            background-image: radial-gradient(white 1px, transparent 1px), radial-gradient(white 1px, transparent 1px);
-            background-size: 50px 50px;
-            background-position: 0 0, 25px 25px;
-        }
-
-        body.theme-mar { 
-            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
-            background-image: radial-gradient(circle, rgba(255,255,255,0.2) 10%, transparent 10%);
-            background-size: 30px 30px; 
-        }
-
-        body.theme-reino { 
-            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-            background-image: radial-gradient(#fff 15%, transparent 16%);
-            background-size: 20px 20px;
+            --accent-glow: 0 0 15px rgba(123, 104, 238, 0.6);
         }
 
         body {
-            font-family: 'Fredoka', sans-serif;
+            font-family: 'Quicksand', sans-serif;
             margin: 0;
             padding: 20px;
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            transition: background 0.5s ease;
+            align-items: flex-start; /* Alinha no topo */
+            background-color: #e0e0e0; /* Fallback */
+            transition: background-image 1s ease-in-out, background-color 1s ease-in-out;
+            overflow-x: hidden;
+            position: relative;
         }
 
+        /* Overlay para legibilidade e profundidade */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.1); /* Suave overlay escuro */
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Animação de background base para profundidade */
+        @keyframes subtlePan {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        /* --- TEMAS (Cenários) --- */
+        /* Padrão (Céu suave) */
+        body.theme-padrao {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+        }
+
+        /* Floresta Encantada */
+        body.theme-floresta {
+            background: 
+                linear-gradient(to top, rgba(0,100,0,0.1) 0%, transparent 50%), /* Sombra de folhagem */
+                linear-gradient(to bottom, #8BC34A 0%, #4CAF50 100%); /* Gradiente verde */
+            background-size: cover, cover;
+            animation: subtlePan 30s infinite alternate linear;
+            position: relative;
+        }
+        body.theme-floresta::after { /* Raio de sol */
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(255,255,0,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* Espaço Sideral */
+        body.theme-espaco {
+            background: 
+                radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%), /* Galáxia escura */
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="80" r="1.5" fill="%23fff"/><circle cx="50" cy="50" r="1" fill="%23fff"/><circle cx="80" cy="20" r="1.5" fill="%23fff"/><circle cx="10" cy="30" r="0.8" fill="%23fff"/><circle cx="70" cy="60" r="0.9" fill="%23fff"/></svg>') repeat; /* Estrelas */
+            background-size: cover, 100px 100px;
+            color: var(--light-text-color);
+            animation: subtlePan 60s infinite alternate linear;
+        }
+        body.theme-espaco::before { background: rgba(0,0,0,0.3); } /* Mais escuro para contraste */
+
+        /* Fundo do Mar */
+        body.theme-mar {
+            background: 
+                linear-gradient(to bottom, #4FC3F7 0%, #0288D1 100%), /* Tons de azul */
+                radial-gradient(ellipse at 50% 100%, rgba(0,128,255,0.2) 0%, transparent 50%); /* Profundidade */
+            background-size: cover;
+            animation: subtlePan 40s infinite alternate linear;
+            position: relative;
+        }
+        @keyframes bubbles {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-200px) scale(1.2); opacity: 0; }
+        }
+        body.theme-mar::after { /* Bolhas */
+            content: '';
+            position: absolute;
+            bottom: -50px; left: 20%; width: 30px; height: 30px;
+            border-radius: 50%; background: rgba(255,255,255,0.3);
+            animation: bubbles 10s infinite ease-in-out;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            filter: blur(1px);
+        }
+
+        /* Reino Mágico */
+        body.theme-reino {
+            background: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);
+            position: relative;
+            animation: subtlePan 50s infinite alternate linear;
+        }
+        body.theme-reino::after { /* Partículas cintilantes */
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.5)"/></svg>') repeat;
+            background-size: 50px 50px;
+            animation: fadeInOut 10s infinite alternate;
+            pointer-events: none;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+            100% { opacity: 0.3; }
+        }
+
+        /* Cidade Grande */
+        body.theme-cidade {
+            background: linear-gradient(to bottom, #30475E 0%, #12181E 100%);
+            position: relative;
+            color: var(--light-text-color);
+        }
+        body.theme-cidade::after { /* Silhuetas de prédios + brilho neon */
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 100px;
+            background: 
+                linear-gradient(to right, #000 0%, transparent 20%, transparent 80%, #000 100%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="10" y="20" width="10" height="80" fill="rgba(255,255,255,0.1)"/><rect x="30" y="0" width="15" height="100" fill="rgba(255,255,255,0.15)"/><rect x="60" y="30" width="12" height="70" fill="rgba(255,255,255,0.08)"/></svg>') repeat-x bottom;
+            background-size: cover, 200px 100px;
+            filter: blur(0.5px);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        /* Mistério Sombrio */
+        body.theme-misterio {
+            background: linear-gradient(180deg, #2c3e50 0%, #202c3a 100%);
+            position: relative;
+            color: var(--light-text-color);
+            background-attachment: fixed;
+        }
+        body.theme-misterio::after { /* Névoa */
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.3) 0%, transparent 70%);
+            animation: slowPulse 15s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+        @keyframes slowPulse {
+            0% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+            100% { opacity: 0.5; transform: scale(1); }
+        }
+
+        /* Conteiner principal (o "livro" da história) */
         .container {
             background-color: var(--card-bg);
-            color: #333; /* Força cor escura dentro do card */
+            color: var(--text-color);
             width: 100%;
-            max-width: 700px;
+            max-width: 750px;
             padding: 40px;
-            border-radius: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            margin-top: 20px;
-            border: 4px solid #fff;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            margin-top: 30px;
+            border: 3px solid var(--primary-color);
             position: relative;
+            z-index: 1; /* Acima do overlay do body */
             overflow: hidden;
         }
 
+        /* Estilo do título principal */
         h1 {
-            font-family: 'Comic Neue', cursive;
+            font-family: 'Comfortaa', cursive;
             text-align: center;
-            color: var(--primary);
-            font-size: 2.8rem;
-            margin-bottom: 10px;
+            color: var(--primary-color);
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* Introdução */
+        .intro {
+            text-align: center;
+            color: #555;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
         }
 
-        /* Form Styling */
+        /* Formulário */
         .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 700; 
+            color: var(--secondary-color);
+        }
         
         input, select, textarea {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             border: 2px solid #ddd;
-            border-radius: 12px;
-            font-family: 'Fredoka', sans-serif;
+            border-radius: 10px;
+            font-family: 'Quicksand', sans-serif;
             font-size: 1rem;
             box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        input:focus, select:focus { border-color: var(--primary); outline: none; }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: var(--accent-glow);
+        }
 
+        /* Botão principal */
         .btn-primary {
             width: 100%;
             padding: 18px;
-            background: var(--primary);
+            background: var(--primary-color);
             color: white;
             border: none;
             border-radius: 12px;
             font-size: 1.3rem;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-            transition: transform 0.2s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .btn-primary:hover { transform: scale(1.02); background: #ff5252; }
+        .btn-primary:hover { 
+            background-color: var(--secondary-color);
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .btn-primary:active { transform: translateY(0); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
 
-        /* Story Reader Styles */
-        #story-container {
-            font-family: 'Comic Neue', cursive;
-            font-size: 1.35rem;
-            line-height: 1.8;
-            color: #2c3e50;
-        }
-
-        #story-container h2 {
-            text-align: center;
-            color: var(--primary);
-            font-size: 2.2rem;
-            margin-top: 0;
-        }
-
-        /* Image generated styling */
-        .story-image-container {
-            text-align: center;
-            margin: 30px 0;
-        }
-        
-        .story-image-container img {
-            max-width: 100%;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            border: 5px solid #fff;
-            transform: rotate(-2deg); /* Efeito lúdico */
-        }
-
+        /* Esconder/Exibir */
         .hidden { display: none; }
 
-        /* Spinner */
+        /* Loading Spinner */
+        .loading-screen {
+            text-align: center;
+            padding: 50px 0;
+        }
         .spinner {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid var(--primary);
+            width: 70px;
+            height: 70px;
+            border: 7px solid #f3f3f3;
+            border-top: 7px solid var(--primary-color);
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            margin: 30px auto;
+            animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite; /* Animação mais lúdica */
+            margin: 0 auto 30px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .loading-text { text-align: center; font-size: 1.2rem; color: #666; }
-        
-        /* Action Buttons */
-        .actions { margin-top: 30px; display: flex; gap: 10px; justify-content: center; }
-        .btn-action {
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            border: none;
-            font-family: inherit;
+        .loading-text {
+            font-size: 1.3rem;
+            color: #666;
+            line-height: 1.5;
+            animation: pulse 2s infinite alternate;
         }
-        .btn-pdf { background-color: #2ecc71; color: white; }
-        .btn-new { background-color: #95a5a6; color: white; }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(1.03); opacity: 1; }
+        }
 
+        /* Story Result Styles */
+        #story-content {
+            background: rgba(255, 255, 255, 0.9); /* Fundo leve para o texto */
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px dashed var(--secondary-color);
+            margin-bottom: 25px;
+            line-height: 1.7;
+            font-size: 1.15rem;
+            color: var(--text-color);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05); /* Sombra interna para profundidade */
+            position: relative;
+            z-index: 2; /* Para garantir que o texto esteja sobre o fundo */
+        }
+
+        #story-content h2 {
+            font-family: 'Comfortaa', cursive;
+            color: var(--primary-color);
+            text-align: center;
+            font-size: 2.2rem;
+            margin-top: 0;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.08);
+        }
+        #story-content p {
+            margin-bottom: 1em;
+            text-indent: 1.5em; /* Pequeno recuo para parágrafos */
+        }
+        #story-content p:first-of-type {
+            text-indent: 0; /* Remove recuo do primeiro parágrafo */
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn-action {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+        .btn-pdf { 
+            background-color: #2ECC71; /* Verde */
+            color: white; 
+        }
+        .btn-pdf:hover { background-color: #27AE60; transform: translateY(-2px); }
+
+        .btn-new { 
+            background-color: #95A5A6; /* Cinza */
+            color: white; 
+        }
+        .btn-new:hover { background-color: #7F8C8D; transform: translateY(-2px); }
+
+        .final-message {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 1rem;
+            color: #777;
+            font-style: italic;
+        }
+
+        /* Responsividade básica */
+        @media (max-width: 768px) {
+            .container { padding: 25px; margin-top: 10px; }
+            h1 { font-size: 2.2rem; }
+            .intro { font-size: 1rem; }
+            .btn-primary { padding: 15px; font-size: 1.1rem; }
+            #story-content { padding: 20px; font-size: 1rem; }
+            #story-content h2 { font-size: 1.8rem; }
+            .actions { flex-direction: column; }
+            .btn-action { width: 100%; }
+        }
     </style>
 </head>
 <body class="theme-padrao">
 
-<div class="container" id="main-card">
-    
+<div class="container">
     <!-- TELA 1: Formulário -->
     <div id="form-screen">
-        <h1>Fábrica de Sonhos ✨</h1>
-        <p style="text-align: center; color: #777; margin-bottom: 30px;">
-            Preencha os detalhes para criar um livro mágico instantâneo!
-        </p>
-
+        <h1>Fábrica de Histórias ✨</h1>
+        <p class="intro">Imagine um mundo mágico para seu pequeno herói(ína)! Escolha um cenário e crie uma aventura inesquecível.</p>
+        
         <form id="story-form">
             <div class="form-group">
-                <label>Nome do Herói/Heroína</label>
-                <input type="text" id="nome" placeholder="Ex: Valentina" required>
+                <label for="nome">Nome da Criança</label>
+                <input type="text" id="nome" placeholder="Ex: Lucas" required>
             </div>
 
             <div style="display: flex; gap: 15px;">
                 <div class="form-group" style="flex: 1;">
-                    <label>Idade</label>
-                    <input type="number" id="idade" placeholder="Ex: 6" required>
+                    <label for="idade">Idade</label>
+                    <input type="number" id="idade" placeholder="Ex: 5" required>
                 </div>
                 <div class="form-group" style="flex: 1;">
-                    <label>Cenário (Muda o visual!)</label>
-                    <select id="cenario" onchange="changeTheme(this.value)">
-                        <option value="padrao">Padrão</option>
-                        <option value="floresta">Floresta Encantada 🌿</option>
-                        <option value="espaco">Espaço Sideral 🚀</option>
-                        <option value="mar">Fundo do Mar 🐠</option>
-                        <option value="reino">Reino Mágico 🏰</option>
+                    <label for="genero">Tipo de Aventura</label>
+                    <select id="genero">
+                        <option value="Aventura">Grande Aventura</option>
+                        <option value="Fantasia">Conto de Fantasia</option>
+                        <option value="Mistério">Mistério Divertido</option>
+                        <option value="Amizade">Lição de Amizade</option>
+                        <option value="Coragem">Superando Desafios</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Características (Cabelo, olhos, roupas...)</label>
-                <input type="text" id="caracteristicas" placeholder="Ex: Cabelo cacheado e capa vermelha">
+                <label for="caracteristicas">Características (Opcional)</label>
+                <input type="text" id="caracteristicas" placeholder="Ex: Cabelos cacheados e óculos azuis">
             </div>
 
             <div class="form-group">
-                <label>O que vai acontecer? (Gênero)</label>
-                <select id="genero">
-                    <option value="Aventura">Uma grande aventura</option>
-                    <option value="Mistério">Um mistério para resolver</option>
-                    <option value="Amizade">História sobre amizade</option>
-                    <option value="Super-Herói">Tornar-se Super-Herói</option>
+                <label for="cenario">Escolha o Cenário Mágico!</label>
+                <select id="cenario" onchange="changeTheme(this.value)">
+                    <option value="padrao">Céu de Sonhos ☁️</option>
+                    <option value="floresta">Floresta Encantada 🌳</option>
+                    <option value="espaco">Espaço Sideral 🌌</option>
+                    <option value="mar">Fundo do Mar 🐠</option>
+                    <option value="reino">Reino Mágico 🏰</option>
+                    <option value="cidade">Cidade Grande 🏙️</option>
+                    <option value="misterio">Laboratório Secreto 🔬</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Lição Final</label>
-                <input type="text" id="mensagem" placeholder="Ex: Acreditar em si mesmo">
+                <label for="mensagem">Mensagem Especial para o Final</label>
+                <input type="text" id="mensagem" placeholder="Ex: A importância de dividir, Acreditar em si...">
             </div>
 
-            <button type="submit" class="btn-primary">Criar História Ilustrada 🎨</button>
+            <button type="submit" class="btn-primary">Criar minha história personalizada</button>
         </form>
     </div>
 
     <!-- TELA 2: Loading -->
-    <div id="loading-screen" class="hidden">
+    <div id="loading-screen" class="hidden loading-screen">
         <div class="spinner"></div>
-        <p class="loading-text">A Inteligência Artificial está escrevendo e desenhando...<br>Isso pode levar alguns segundos!</p>
+        <p class="loading-text">Abracadabra... Nossas palavras estão ganhando vida! ✨</p>
+        <p class="loading-text" style="font-size: 0.9rem;">(A magia leva alguns segundos para acontecer...)</p>
     </div>
 
     <!-- TELA 3: Resultado -->
     <div id="result-screen" class="hidden">
         <div id="story-content">
-            <!-- Conteúdo Injetado Aqui -->
+            <!-- O conteúdo gerado pela IA entrará aqui -->
         </div>
 
         <div class="actions">
             <button onclick="downloadPDF()" class="btn-action btn-pdf">Baixar Livro PDF 📥</button>
-            <button onclick="location.reload()" class="btn-action btn-new">Criar Nova 🔄</button>
+            <button onclick="location.reload()" class="btn-action btn-new">Criar Nova História 🔄</button>
         </div>
+        
+        <p class="final-message">✨ Compartilhe a magia da leitura em família! ✨</p>
     </div>
-
 </div>
 
 <script>
-    // Lógica para mudar o background dinamicamente antes de enviar
+    // Função para mudar o tema do body com base na seleção
     function changeTheme(theme) {
         document.body.className = `theme-${theme}`;
     }
 
     const form = document.getElementById('story-form');
-    const loadingScreen = document.getElementById('loading-screen');
     const formScreen = document.getElementById('form-screen');
+    const loadingScreen = document.getElementById('loading-screen');
     const resultScreen = document.getElementById('result-screen');
     const storyContent = document.getElementById('story-content');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // UI Updates
-        formScreen.classList.add('hidden');
-        loadingScreen.classList.remove('hidden');
-        
-        // Coletar dados
-        const cenarioSelect = document.getElementById('cenario');
-        const cenarioText = cenarioSelect.options[cenarioSelect.selectedIndex].text;
-
+        // Coleta de dados
         const data = {
             nome: document.getElementById('nome').value,
             idade: document.getElementById('idade').value,
-            caracteristicas: document.getElementById('caracteristicas').value,
-            cenario: cenarioText, // Envia o texto bonito para a IA
             genero: document.getElementById('genero').value,
+            caracteristicas: document.getElementById('caracteristicas').value,
+            // Pega o texto da opção selecionada para o prompt, para a IA entender melhor o cenário
+            cenario: document.getElementById('cenario').options[document.getElementById('cenario').selectedIndex].text.split(' ')[0], 
             mensagem: document.getElementById('mensagem').value
         };
+
+        // Troca de tela
+        formScreen.classList.add('hidden');
+        loadingScreen.classList.remove('hidden');
 
         try {
             const response = await fetch('/api/ai', {
@@ -290,29 +483,32 @@
             const json = await response.json();
 
             if (response.ok) {
+                // Injeta o HTML retornado
                 storyContent.innerHTML = json.result;
+                
                 loadingScreen.classList.add('hidden');
                 resultScreen.classList.remove('hidden');
             } else {
-                throw new Error(json.error);
+                alert('Erro: ' + json.error);
+                location.reload();
             }
+
         } catch (error) {
-            alert('Ops! Demorou muito ou houve um erro: ' + error.message);
-            loadingScreen.classList.add('hidden');
-            formScreen.classList.remove('hidden');
+            console.error(error);
+            alert('Ocorreu um erro ao conectar com o servidor. Verifique sua conexão e tente novamente.');
+            location.reload();
         }
     });
 
     function downloadPDF() {
-        // Seleciona o card inteiro para manter o estilo na impressão
         const element = document.getElementById('story-content');
-        
-        // Configurações para garantir que a imagem saia no PDF
+        const nomeCrianca = document.getElementById('nome').value || 'Crianca'; // Pega o nome para o arquivo
+
         const opt = {
-            margin:       0.5,
-            filename:     `historia-magica.pdf`,
+            margin:       0.8,
+            filename:     `historinha-do-${nomeCrianca}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true }, // useCORS é vital para imagens externas
+            html2canvas:  { scale: 2, logging: false, dpi: 192, letterRendering: true }, // Otimização para texto
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
         
