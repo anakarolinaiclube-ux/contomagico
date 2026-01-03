@@ -1,7 +1,7 @@
 {
   "name": "microsaas-historias-imersivas",
   "version": "1.0.0",
-  "description": "Gerador de histórias infantis com backgrounds imersivos via CSS",
+  "description": "Gerador de histórias infantis com backgrounds imersivos",
   "main": "api/ai.js",
   "scripts": {
     "start": "node api/ai.js"
