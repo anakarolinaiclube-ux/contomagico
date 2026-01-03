@@ -5,13 +5,18 @@ const openai = new OpenAI({
 });
 
 export default async function handler(req, res) {
-  // CORS
+  // Configuração de CORS para permitir requisições do front
+  res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
   if (req.method !== 'POST') {
@@ -21,71 +26,49 @@ export default async function handler(req, res) {
   try {
     const { nome, idade, caracteristicas, genero, cenario, mensagem } = req.body;
 
+    // Validação básica
     if (!nome || !idade || !genero) {
       return res.status(400).json({ error: 'Dados incompletos.' });
     }
 
-    // 1. Definição do Prompt de Texto
-    const textPrompt = `
-      Escreva uma história infantil mágica.
-      Protagonista: ${nome}, ${idade} anos. Características: ${caracteristicas || 'padrão'}.
-      Cenário: ${cenario}.
-      Tema: ${genero}.
-      Mensagem Moral: ${mensagem}.
+    const prompt = `
+      Você é um escritor profissional de livros infantis.
+      Crie uma história curta, envolvente e mágica para uma criança.
+      
+      DADOS DA CRIANÇA:
+      - Nome: ${nome}
+      - Idade: ${idade} anos
+      - Características físicas: ${caracteristicas || 'Não especificado'}
+      
+      CONFIGURAÇÃO DA HISTÓRIA:
+      - Gênero: ${genero}
+      - Cenário Principal: ${cenario || 'Um lugar mágico'}
+      - Lição/Mensagem Moral a reforçar: ${mensagem || 'Amizade e coragem'}
 
-      REGRAS HTML:
-      - Retorne APENAS HTML válido dentro de uma div principal.
-      - NÃO use tags <html>, <head>, <body>.
-      - Use <h2> para o Título.
-      - Use <p> para parágrafos curtos.
-      - A história deve ser dividida em 3 partes curtas.
-      - Insira a tag <div id="illustration-placeholder"></div> exatamente após o segundo parágrafo.
-      - Encerre com uma mensagem motivacional em itálico.
+      REGRAS DE FORMATAÇÃO:
+      - O texto deve ser formatado em HTML (sem as tags <html>, <head> ou <body>).
+      - Use <h2> para o Título da História (Crie um título criativo).
+      - Use <p> para os parágrafos.
+      - A linguagem deve ser adequada para uma criança de ${idade} anos.
+      - A história deve ter no máximo 400 palavras.
+      - Termine com um parágrafo final emocionante reforçando a mensagem: "${mensagem}".
     `;
 
-    // 2. Definição do Prompt da Imagem (Otimizado para DALL-E 2 ou 3)
-    const imagePrompt = `Children's book illustration, cartoon style, cute, colorful.
-    Character: ${nome}, ${idade} years old kid, ${caracteristicas || 'happy'}.
-    Setting: ${cenario}. Theme: ${genero}.
-    Action: Standing heroically or discovering something magical.`;
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini", // Modelo rápido, barato e inteligente
+      messages: [
+        { role: "system", content: "Você é um assistente criativo que escreve histórias infantis em formato HTML." },
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.7,
+    });
 
-    // 3. Execução em PARALELO (Texto + Imagem) para velocidade
-    const [textCompletion, imageResponse] = await Promise.all([
-      openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [{ role: "user", content: textPrompt }],
-        temperature: 0.7,
-      }),
-      openai.images.generate({
-        model: "dall-e-2", // DALL-E 2 é mais rápido para MVP. Se tiver crédito/tier pago, use dall-e-3
-        prompt: imagePrompt,
-        n: 1,
-        size: "512x512", // Tamanho otimizado para web
-      })
-    ]);
-
-    let storyHtml = textCompletion.choices[0].message.content;
-    const imageUrl = imageResponse.data[0].url;
-
-    // 4. Injeção da Imagem no HTML
-    const imageTag = `
-      <div class="story-image-container">
-        <img src="${imageUrl}" alt="Ilustração da história" crossorigin="anonymous" />
-      </div>
-    `;
-
-    // Substitui o placeholder pela imagem
-    if (storyHtml.includes('id="illustration-placeholder"')) {
-      storyHtml = storyHtml.replace('<div id="illustration-placeholder"></div>', imageTag);
-    } else {
-      // Fallback se a IA esquecer o placeholder
-      storyHtml = imageTag + storyHtml;
-    }
+    const storyHtml = completion.choices[0].message.content;
 
     return res.status(200).json({ result: storyHtml });
 
   } catch (error) {
-    console.error("Erro na API:", error);
-    return res.status(500).json({ error: 'Erro ao gerar a história. Tente novamente.' });
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao gerar a história.' });
   }
 }
