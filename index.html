@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conto Mágico - Histórias Personalizadas</title>
+    <!-- Fonte amigável -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Biblioteca para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #FF9F1C;
+            --secondary: #2EC4B6;
+            --bg: #CBF3F0;
+            --text: #2B2D42;
+            --card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #555;
+            font-size: 1.1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--secondary);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #e68a00;
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--secondary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Story Result Styles */
+        #story-content {
+            background: #fffdf5;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px dashed var(--secondary);
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        #story-content h2 {
+            color: var(--secondary);
+            text-align: center;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+        .btn-outline:hover {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .final-message {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- TELA 1: Formulário -->
+    <div id="form-screen">
+        <h1>Conto Mágico ✨</h1>
+        <p class="intro">Crie uma história única onde seu pequeno herói é o protagonista! Preencha os dados abaixo e deixe a magia acontecer.</p>
+        
+        <form id="story-form">
+            <label for="nome">Nome da Criança</label>
+            <input type="text" id="nome" placeholder="Ex: Lucas" required>
+
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <label for="idade">Idade</label>
+                    <input type="number" id="idade" placeholder="Ex: 5" required>
+                </div>
+                <div style="flex: 1;">
+                    <label for="genero">Gênero da História</label>
+                    <select id="genero">
+                        <option value="Aventura">Aventura</option>
+                        <option value="Fantasia">Fantasia</option>
+                        <option value="Ficção Científica">Espaço/Ficção</option>
+                        <option value="Conto de Fadas">Conto de Fadas</option>
+                        <option value="Super-Heróis">Super-Heróis</option>
+                        <option value="Animais Falantes">Animais Falantes</option>
+                    </select>
+                </div>
+            </div>
+
+            <label for="caracteristicas">Características Físicas (Opcional)</label>
+            <input type="text" id="caracteristicas" placeholder="Ex: Cabelos cacheados e óculos azuis">
+
+            <label for="cenario">Cenário Principal</label>
+            <input type="text" id="cenario" placeholder="Ex: Uma floresta encantada, O fundo do mar, Uma escola de magia...">
+
+            <label for="mensagem">Lição ou Mensagem Especial</label>
+            <input type="text" id="mensagem" placeholder="Ex: A importância de dividir, Coragem para enfrentar o escuro...">
+
+            <button type="submit">Criar minha história personalizada 🚀</button>
+        </form>
+    </div>
+
+    <!-- TELA 2: Loading -->
+    <div id="loading-screen" class="hidden loading">
+        <div class="spinner"></div>
+        <h3>Escrevendo a história...</h3>
+        <p>Aguarde enquanto a magia acontece!</p>
+    </div>
+
+    <!-- TELA 3: Resultado -->
+    <div id="result-screen" class="hidden">
+        <h1>Sua História! 📖</h1>
+        
+        <div id="story-content">
+            <!-- O conteúdo gerado pela IA entrará aqui -->
+        </div>
+
+        <div class="actions">
+            <button onclick="downloadPDF()" class="btn-secondary">Baixar PDF 📥</button>
+            <button onclick="copyText()" class="btn-outline">Copiar Texto 📋</button>
+        </div>
+        
+        <button onclick="location.reload()" style="margin-top: 15px; background-color: #6c757d;">Criar Nova História 🔄</button>
+
+        <p class="final-message">✨ Ler em família cria memórias para sempre! ✨</p>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('story-form');
+    const formScreen = document.getElementById('form-screen');
+    const loadingScreen = document.getElementById('loading-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const storyContent = document.getElementById('story-content');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Coleta de dados
+        const data = {
+            nome: document.getElementById('nome').value,
+            idade: document.getElementById('idade').value,
+            genero: document.getElementById('genero').value,
+            caracteristicas: document.getElementById('caracteristicas').value,
+            cenario: document.getElementById('cenario').value,
+            mensagem: document.getElementById('mensagem').value
+        };
+
+        // Troca de tela
+        formScreen.classList.add('hidden');
+        loadingScreen.classList.remove('hidden');
+
+        try {
+            const response = await fetch('/api/ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const json = await response.json();
+
+            if (response.ok) {
+                // Injeta o HTML retornado
+                storyContent.innerHTML = json.result;
+                
+                loadingScreen.classList.add('hidden');
+                resultScreen.classList.remove('hidden');
+            } else {
+                alert('Erro: ' + json.error);
+                location.reload();
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert('Ocorreu um erro ao conectar com o servidor.');
+            location.reload();
+        }
+    });
+
+    function copyText() {
+        const text = storyContent.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            alert('História copiada para a área de transferência!');
+        });
+    }
+
+    function downloadPDF() {
+        const element = document.getElementById('story-content');
+        const opt = {
+            margin:       1,
+            filename:     `historia-${document.getElementById('nome').value}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        
+        // Usa a biblioteca html2pdf carregada via CDN
+        html2pdf().set(opt).from(element).save();
+    }
+</script>
+
+</body>
+</html>

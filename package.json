@@ -1,0 +1,15 @@
+{
+  "name": "microsaas-historias-infantis",
+  "version": "1.0.0",
+  "description": "Gerador de histórias infantis via IA",
+  "main": "api/ai.js",
+  "scripts": {
+    "start": "node api/ai.js"
+  },
+  "dependencies": {
+    "openai": "^4.0.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
